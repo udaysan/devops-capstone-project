@@ -67,19 +67,21 @@ spec:
 
     - name: deploy
       workspaces:
-        - name: manifest-dir
+        - name: source   # ✅ FIXED
           workspace: pipeline-workspace
       taskRef:
         name: openshift-client
         kind: ClusterTask
       params:
-      - name: SCRIPT
-        value: |
-          echo "Updating manifest..."
-          sed -i "s|IMAGE_NAME_HERE|$(params.build-image)|g" deploy/deployment.yaml
-          cat deploy/deployment.yaml
-          echo "Deploying to OpenShift..."
-          oc apply -f deploy/
-          oc get pods -l app=accounts
+        - name: SCRIPT
+          value: |
+            echo "Updating manifest..."
+            cd $(workspaces.source.path)
+            sed -i "s|IMAGE_NAME_HERE|$(params.build-image)|g" deploy/deployment.yaml
+            cat deploy/deployment.yaml
+
+            echo "Deploying to OpenShift..."
+            oc apply -f deploy/
+            oc get pods -l app=accounts
       runAfter:
         - build
