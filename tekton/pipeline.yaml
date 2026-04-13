@@ -35,7 +35,10 @@ spec:
         - name: image
           value: python:3.9-slim
         - name: args
-          value: "--count --max-complexity=10 --max-line-length=127 --statistics"
+          value:
+            - "--max-line-length=127"
+            - "--max-complexity=10"
+            - "--statistics"
       runAfter:
         - clone
 
@@ -46,10 +49,13 @@ spec:
       taskRef:
         name: nose
       params:
-        - name: args
-          value: "-v --with-spec --spec-color"
+      - name: database_uri
+        value: "sqlite:///test.db"
+      - name: args
+        value: "-v --with-spec --spec-color"
       runAfter:
         - clone
+
 
     - name: build
       workspaces:
